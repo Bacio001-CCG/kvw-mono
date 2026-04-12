@@ -1,0 +1,28 @@
+{
+  "name": "@repo/database",
+  "version": "0.0.0",
+  "private": true,
+  "exports": {
+    "./*": "./src/*.ts"
+  },
+  "scripts": {
+    "db:generate": "drizzle-kit generate --dialect=postgresql --schema=src/db/schema.ts --out=./drizzle",
+    "db:push": "drizzle-kit push --config=./drizzle.config.ts",
+    "check-types": "tsup --dts"
+  },
+  "devDependencies": {
+    "@types/node": "^25.5.0",
+    "@types/pg": "^8.18.0",
+    "drizzle-kit": "^0.31.10",
+    "eslint": "^9.39.1",
+    "tsup": "^8.5.1",
+    "tsx": "^4.21.0",
+    "typescript": "5.9.2"
+  },
+  "dependencies": {
+    "@repo/types": "workspace:*",
+    "dotenv": "^17.3.1",
+    "drizzle-orm": "^0.45.2",
+    "pg": "^8.20.0"
+  }
+}

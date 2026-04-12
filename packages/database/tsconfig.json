@@ -1,0 +1,30 @@
+{
+  "extends": "@repo/typescript-config/package.json",
+  "compilerOptions": {
+    "outDir": "dist",
+    "strictNullChecks": true,
+    "types": [
+      "node"
+    ],
+    "baseUrl": ".",
+    "paths": {
+      "@/*": [
+        "./src/*"
+      ],
+      "@repo/types": [
+        "../types/src/index.ts"
+      ],
+      "@repo/types/*": [
+        "../types/src/*"
+      ]
+    }
+  },
+  "include": [
+    "src",
+    "drizzle.config.ts"
+  ],
+  "exclude": [
+    "node_modules",
+    "dist"
+  ]
+}
