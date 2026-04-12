@@ -14,7 +14,7 @@ export default function Section({
     id?: string;
 }) {
     return (
-        <section className="px-10 w-full flex flex-col gap-12 max-w-[1200px]" id={id}>
+        <section className="mx-auto px-10 w-full flex flex-col gap-12 max-w-300" id={id}>
             <div className={`flex flex-col w-full `}>
                 {title && (
                     <div

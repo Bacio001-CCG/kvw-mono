@@ -6,7 +6,7 @@ function Navbar({ className, ...props }: React.ComponentProps<"nav">) {
   return (
     <nav
       data-slot="navbar"
-      className={cn("flex items-center justify-between py-4 max-w-[1200px] mx-auto", className)}
+      className={cn("flex items-center justify-between py-4 max-w-300 mx-auto", className)}
       {...props}
     />
   );
