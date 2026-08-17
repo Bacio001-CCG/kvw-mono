@@ -1,14 +1,24 @@
 import Image from "next/image";
 
 import PageHero from "@/components/site/page-hero";
+import UnpublishedNotice from "@/components/site/unpublished-notice";
+import { cmsPage, fetchPublicCmsSafe, paragraphs } from "@/lib/cms";
 
-export default function OverOnsPage() {
+export const dynamic = "force-dynamic";
+export const revalidate = 0;
+
+export default async function OverOnsPage() {
+    const cms = await fetchPublicCmsSafe();
+    const page = cmsPage(cms, "over-ons");
+    if (!page) return <UnpublishedNotice />;
+    const bodyParagraphs = paragraphs(page.body || page.summary || "");
+
     return (
         <main className="flex flex-col gap-16 pb-20 pt-6 sm:gap-20 sm:pt-10">
             <PageHero
                 eyebrow="Over ons"
-                title="KVW HeKoS in een notendop"
-                description="Al meer dan 55 jaar organiseren we met vrijwilligers een onvergetelijke week voor kinderen uit de wijk en daarbuiten."
+                title={page.title}
+                description={page.summary || ""}
                 visual={(
                     <div className="space-y-4">
                         <div className="overflow-hidden rounded-[1.5rem] bg-white/70 backdrop-blur-sm shadow-none">
@@ -39,18 +49,9 @@ export default function OverOnsPage() {
                         <h2 className="mt-3 text-3xl font-semibold tracking-tight text-foreground sm:text-4xl">Van buurtinitiatief naar jaarlijkse traditie</h2>
                         <div className="mt-6 grid gap-8 lg:grid-cols-[1.1fr_0.9fr] lg:items-start">
                             <div className="space-y-4 text-base leading-8 text-muted-foreground">
-                                <p>
-                                    KVW HeKoS is gestart vanuit de wens om kinderen in de wijk een leuke afsluiting van de zomervakantie te geven.
-                                    Wat begon als een kleinschalig initiatief groeide uit tot een vaste traditie waar gezinnen ieder jaar naar uitkijken.
-                                </p>
-                                <p>
-                                    Door de jaren heen veranderde de organisatie, maar de kern bleef gelijk: een toegankelijke week met activiteiten,
-                                    spel en ontmoeting. Met een team van betrokken vrijwilligers bouwen we elke editie opnieuw op hetzelfde fundament.
-                                </p>
-                                <p>
-                                    We combineren ervaring met vernieuwing. Daardoor voelt HeKoS vertrouwd voor deelnemers die al jaren meedoen,
-                                    en tegelijk fris en uitnodigend voor nieuwe kinderen en ouders.
-                                </p>
+                                {bodyParagraphs.map((paragraph) => (
+                                    <p key={paragraph}>{paragraph}</p>
+                                ))}
                             </div>
                             <div className="overflow-hidden rounded-2xl">
                                 <Image

@@ -12,13 +12,13 @@ export default function RegistrerenPage() {
             <PageHero
                 eyebrow="Registreren"
                 title="Kies het juiste inschrijfformulier"
-                description="Lorem ipsum dolor sit amet, consectetur adipiscing elit. Integer posuere erat a ante venenatis dapibus posuere velit aliquet."
+                description="Schrijf je kind in of meld je aan als vrijwilliger. Kies hieronder het juiste formulier."
                 visual={(
                     <div className="grid gap-3">
                         <div className="rounded-[1.5rem] bg-orange-500 p-5 text-white shadow-none">
                             <Users className="size-7" />
                             <p className="mt-3 text-lg font-semibold">Voor kinderen en vrijwilligers</p>
-                            <p className="mt-2 text-sm text-white/85">Lorem ipsum dolor sit amet.</p>
+                            <p className="mt-2 text-sm text-white/85">Voor kinderen en vrijwilligers.</p>
                         </div>
                         <div className="grid gap-3 sm:grid-cols-2">
                             <div className="rounded-2xl bg-white/70 backdrop-blur-sm p-4 shadow-none">
@@ -40,10 +40,10 @@ export default function RegistrerenPage() {
                         <div className="h-2 bg-linear-to-r from-orange-500 to-orange-300" />
                         <CardHeader>
                             <CardTitle>Kind inschrijven</CardTitle>
-                            <CardDescription>Lorem ipsum dolor sit amet, consectetur adipiscing elit.</CardDescription>
+                            <CardDescription>Voor een veilige week en een passende groepsindeling.</CardDescription>
                         </CardHeader>
                         <CardContent className="space-y-4">
-                            <p className="text-sm leading-7 text-muted-foreground">Lorem ipsum dolor sit amet, consectetur adipiscing elit.</p>
+                            <p className="text-sm leading-7 text-muted-foreground">Vul de gegevens van je kind in. Na het verzenden ontvang je een bevestiging.</p>
                             <Button asChild className="bg-orange-500">
                                 <Link href="/inschrijven/kind">Naar kindformulier</Link>
                             </Button>
@@ -54,10 +54,10 @@ export default function RegistrerenPage() {
                         <div className="h-2 bg-linear-to-r from-sky-500 to-sky-300" />
                         <CardHeader>
                             <CardTitle>Vrijwilliger worden</CardTitle>
-                            <CardDescription>Lorem ipsum dolor sit amet, consectetur adipiscing elit.</CardDescription>
+                            <CardDescription>Help mee tijdens de KVW-week.</CardDescription>
                         </CardHeader>
                         <CardContent className="space-y-4">
-                            <p className="text-sm leading-7 text-muted-foreground">Lorem ipsum dolor sit amet, consectetur adipiscing elit.</p>
+                            <p className="text-sm leading-7 text-muted-foreground">Laat je gegevens en beschikbaarheid achter. We nemen contact met je op.</p>
                             <Button asChild variant="outline">
                                 <Link href="/inschrijven/vrijwilliger">Naar vrijwilligerformulier</Link>
                             </Button>

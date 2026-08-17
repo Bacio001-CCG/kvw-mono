@@ -9,6 +9,8 @@ import { Input } from "@workspace/ui/components/input";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
+import { submitJson } from "@/lib/submit-json";
+import { useSiteStatus } from "@/components/site/site-status";
 
 type FormValues = {
     childFirstName: string;
@@ -69,8 +71,12 @@ function ErrorText({ text }: { text?: string }) {
 
 export default function ChildRegistrationForm() {
     const router = useRouter();
+    const status = useSiteStatus();
+    const price = status?.pricePerChild;
     const [values, setValues] = useState<FormValues>(defaultValues);
     const [errors, setErrors] = useState<Record<string, string>>({});
+    const [submitError, setSubmitError] = useState("");
+    const [submitting, setSubmitting] = useState(false);
 
     const diplomaSet = useMemo(() => new Set(values.swimDiplomas), [values.swimDiplomas]);
 
@@ -95,7 +101,6 @@ export default function ChildRegistrationForm() {
         if (values.donation === "anders" && values.donationOtherAmount.trim().length === 0) {
             nextErrors.donationOtherAmount = "Vul een bedrag in bij Anders.";
         }
-        if (values.notes.trim().length < 10) nextErrors.notes = "Vul bijzonderheden in (minimaal 10 tekens).";
         if (!values.termsAccepted) nextErrors.termsAccepted = "Akkoord met voorwaarden is verplicht.";
         if (!values.photoConsent) nextErrors.photoConsent = "Akkoord met foto-toestemming is verplicht.";
 
@@ -103,10 +108,18 @@ export default function ChildRegistrationForm() {
         return Object.keys(nextErrors).length === 0;
     };
 
-    const onSubmit = (event: FormEvent<HTMLFormElement>) => {
+    const onSubmit = async (event: FormEvent<HTMLFormElement>) => {
         event.preventDefault();
         if (!validate()) return;
-        router.push("/inschrijven/bevestiging?type=kind");
+        setSubmitting(true);
+        setSubmitError("");
+        try {
+            await submitJson("/api/registrations/child", values);
+            router.push("/inschrijven/bevestiging?type=kind");
+        } catch (error) {
+            setSubmitError(error instanceof Error ? error.message : "Inschrijving mislukt.");
+            setSubmitting(false);
+        }
     };
 
     const toggleDiploma = (value: "A" | "B" | "C" | "Geen") => {
@@ -260,6 +273,11 @@ export default function ChildRegistrationForm() {
                     </section>
 
                     <section className="grid gap-2">
+                        {price && Number(price) > 0 ? (
+                            <p className="rounded-lg border border-orange-200 bg-orange-50 px-3 py-2 text-sm">
+                                Inschrijfgeld: €{price.replace(".", ",")} per kind
+                            </p>
+                        ) : null}
                         <Label htmlFor="donation">Extra donatie</Label>
                         <p className="text-sm text-muted-foreground">
                             We proberen het inschrijfgeld laag te houden. Extra bijdrages helpen ons KVW toegankelijk te houden.
@@ -294,13 +312,14 @@ export default function ChildRegistrationForm() {
                         <ErrorText text={errors.termsAccepted} />
                         <label className="flex items-start gap-2 text-sm">
                             <input type="checkbox" checked={values.photoConsent} onChange={(e) => setValues({ ...values, photoConsent: e.target.checked })} />
-                            Ik ga ermee akkoord dat mijn kind kan worden gefotografeerd tijdens KVW en dat die foto&apos;s voor promotionele doeleinden kunnen worden ingezet.
+                        Ik ga ermee akkoord dat mijn kind kan worden gefotografeerd tijdens KVW en dat die foto&apos;s voor promotionele doeleinden kunnen worden ingezet. Vanzelfsprekend gebruiken wij geen foto&apos;s van kinderen in zwemkleding voor promotionele doeleinden.
                         </label>
                         <ErrorText text={errors.photoConsent} />
                     </section>
 
-                    <Button type="submit" className="w-full bg-orange-500 md:w-fit">
-                        Inschrijving verzenden
+                    {submitError ? <p className="text-sm text-red-600">{submitError}</p> : null}
+                    <Button type="submit" className="w-full bg-orange-500 md:w-fit" disabled={submitting}>
+                        {submitting ? "Verzenden..." : "Inschrijving verzenden"}
                     </Button>
                 </form>
             </CardContent>

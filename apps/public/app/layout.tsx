@@ -4,6 +4,10 @@ import "@workspace/ui/globals.css";
 import { ToastContainer } from "react-toastify";
 import Navbar from "@/components/sections/navbar/default";
 import Footer from "@/components/footer";
+import { SiteStatusProvider, TestModeBanner } from "@/components/site/site-status";
+
+export const dynamic = "force-dynamic";
+export const revalidate = 0;
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -30,10 +34,13 @@ export default function RootLayout({
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}
       >
+        <SiteStatusProvider>
         <Navbar />
+        <TestModeBanner />
         {children}
         <ToastContainer />
         <Footer />
+        </SiteStatusProvider>
       </body>
     </html>
   );

@@ -14,7 +14,7 @@ const sponsors = [
 export default function SponsorStrip({ title = "Onze sponsoren" }: { title?: string }) {
     return (
         <section className="w-full rounded-2xl border border-border/60 bg-white/80 px-4 py-6 shadow-sm">
-            <h2 className="mb-4 text-center text-xl font-semibold tracking-wide">{title}</h2>
+        {title ? <h2 className="mb-4 text-center text-xl font-semibold tracking-wide">{title}</h2> : null}
             <div className="grid grid-cols-2 items-center justify-items-center gap-5 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-7">
                 {sponsors.map((sponsor) => {
                     const logo = (

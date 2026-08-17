@@ -9,6 +9,7 @@ import { Input } from "@workspace/ui/components/input";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
+import { submitJson } from "@/lib/submit-json";
 
 type VolunteerValues = {
     firstName: string;
@@ -57,6 +58,8 @@ export default function VolunteerRegistrationForm() {
     const router = useRouter();
     const [values, setValues] = useState<VolunteerValues>(defaults);
     const [errors, setErrors] = useState<Record<string, string>>({});
+    const [submitError, setSubmitError] = useState("");
+    const [submitting, setSubmitting] = useState(false);
 
     const validate = () => {
         const nextErrors: Record<string, string> = {};
@@ -79,10 +82,18 @@ export default function VolunteerRegistrationForm() {
         return Object.keys(nextErrors).length === 0;
     };
 
-    const onSubmit = (event: FormEvent<HTMLFormElement>) => {
+    const onSubmit = async (event: FormEvent<HTMLFormElement>) => {
         event.preventDefault();
         if (!validate()) return;
-        router.push("/inschrijven/bevestiging?type=vrijwilliger");
+        setSubmitting(true);
+        setSubmitError("");
+        try {
+            await submitJson("/api/registrations/volunteer", values);
+            router.push("/inschrijven/bevestiging?type=vrijwilliger");
+        } catch (error) {
+            setSubmitError(error instanceof Error ? error.message : "Inschrijving mislukt.");
+            setSubmitting(false);
+        }
     };
 
     return (
@@ -192,8 +203,9 @@ export default function VolunteerRegistrationForm() {
                         <Textarea id="notes" rows={5} value={values.notes} onChange={(e) => setValues({ ...values, notes: e.target.value })} />
                     </section>
 
-                    <Button type="submit" className="w-full bg-sky-500 md:w-fit">
-                        Inschrijving verzenden
+                    {submitError ? <p className="text-sm text-red-600">{submitError}</p> : null}
+                    <Button type="submit" className="w-full bg-sky-500 md:w-fit" disabled={submitting}>
+                        {submitting ? "Verzenden..." : "Inschrijving verzenden"}
                     </Button>
                 </form>
             </CardContent>

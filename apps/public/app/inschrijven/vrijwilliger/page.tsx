@@ -1,5 +1,6 @@
 import VolunteerRegistrationForm from "@/components/site/volunteer-registration-form";
 import PageHero from "@/components/site/page-hero";
+import { RegistrationGate } from "@/components/site/site-status";
 
 export default function InschrijvenVrijwilligerPage() {
     return (
@@ -7,7 +8,7 @@ export default function InschrijvenVrijwilligerPage() {
             <PageHero
                 eyebrow="Vrijwilliger"
                 title="Help mee tijdens KVW HeKoS"
-                description="Lorem ipsum dolor sit amet, consectetur adipiscing elit. Integer posuere erat a ante venenatis dapibus posuere velit aliquet."
+                description="Help mee tijdens de week. Vul je gegevens en beschikbaarheid in, dan nemen we contact met je op."
                 visual={(
                     <div className="space-y-4">
                         <div className="rounded-[1.5rem] bg-linear-to-br from-sky-500 to-orange-500 p-5 text-white shadow-none">
@@ -27,7 +28,9 @@ export default function InschrijvenVrijwilligerPage() {
             />
 
             <div className="mx-auto w-full max-w-6xl px-4 sm:px-6 lg:px-10">
-                <VolunteerRegistrationForm />
+                <RegistrationGate type="volunteer">
+                    <VolunteerRegistrationForm />
+                </RegistrationGate>
             </div>
         </main>
     );

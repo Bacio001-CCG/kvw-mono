@@ -127,6 +127,10 @@ export const registrationCycles = pgTable(
         label: text("label").notNull(),
         status: registrationCycleStatusEnum("status").notNull().default("draft"),
         isTestMode: boolean("is_test_mode").notNull().default(false),
+        childRegistrationsOpen: boolean("child_registrations_open").notNull().default(false),
+        volunteerRegistrationsOpen: boolean("volunteer_registrations_open")
+            .notNull()
+            .default(false),
         childRegistrationsOpenAt: timestamp("child_registrations_open_at"),
         childRegistrationsCloseAt: timestamp("child_registrations_close_at"),
         volunteerRegistrationsOpenAt: timestamp("volunteer_registrations_open_at"),
@@ -245,6 +249,7 @@ export const childRegistrationChildren = pgTable(
         swimCertificateLevel: swimCertificateLevelEnum("swim_certificate_level")
             .notNull()
             .default("none"),
+        swimCertificates: text("swim_certificates"),
         hasLiabilityInsurance: boolean("has_liability_insurance")
             .notNull()
             .default(false),
@@ -290,6 +295,7 @@ export const volunteerRegistrations = pgTable(
         availability: volunteerAvailabilityEnum("availability")
             .notNull()
             .default("event_week_only"),
+        availabilityOther: text("availability_other"),
         ageGroupPreference: volunteerPreferenceEnum("age_group_preference")
             .notNull()
             .default("no_preference"),

@@ -7,6 +7,8 @@ import { cn } from "@workspace/ui/lib/utils";
 
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import PageHero from "@/components/site/page-hero";
+import UnpublishedNotice from "@/components/site/unpublished-notice";
+import { cmsPage, fetchPublicCmsSafe } from "@/lib/cms";
 
 const packages = [
     {
@@ -45,13 +47,20 @@ const packages = [
     },
 ];
 
-export default function SponsorPakkettenPage() {
+export const dynamic = "force-dynamic";
+export const revalidate = 0;
+
+export default async function SponsorPakkettenPage() {
+    const cms = await fetchPublicCmsSafe();
+    const page = cmsPage(cms, "sponsorpakketten");
+    if (!page) return <UnpublishedNotice />;
+
     return (
         <main className="flex flex-col gap-16 pb-20 pt-6 sm:gap-20 sm:pt-10">
             <PageHero
                 eyebrow="Sponsoren"
-                title="Sponsorpakketten die passen bij jouw organisatie"
-                description="Lorem ipsum dolor sit amet, consectetur adipiscing elit. Integer posuere erat a ante venenatis dapibus posuere velit aliquet."
+                title={page.title}
+                description={page.summary || page.body}
                 actions={(
                     <Button asChild className="bg-orange-500">
                         <Link href="/contact">Neem contact op</Link>
@@ -62,7 +71,7 @@ export default function SponsorPakkettenPage() {
                         <div className="rounded-[1.5rem] bg-linear-to-br from-orange-500 to-sky-500 p-5 text-white shadow-none">
                             <Star className="size-7" />
                             <p className="mt-3 text-lg font-semibold">Samen investeren in plezier</p>
-                            <p className="mt-2 text-sm text-white/85">Lorem ipsum dolor sit amet.</p>
+                            <p className="mt-2 text-sm text-white/85">Zichtbaarheid voor jouw organisatie, impact voor de wijk.</p>
                         </div>
                         <div className="grid gap-3 sm:grid-cols-2">
                             <div className="rounded-2xl bg-white/70 backdrop-blur-sm p-4 shadow-none">
@@ -124,7 +133,7 @@ export default function SponsorPakkettenPage() {
                     <div className="flex flex-col gap-5 lg:flex-row lg:items-center lg:justify-between">
                         <div>
                             <h2 className="text-2xl font-semibold">Ook sponsor worden?</h2>
-                            <p className="mt-2 max-w-2xl text-muted-foreground">Lorem ipsum dolor sit amet, consectetur adipiscing elit.</p>
+                            <p className="mt-2 max-w-2xl text-muted-foreground">{page?.body || "Stuur ons een bericht en we denken graag mee over een passend pakket."}</p>
                         </div>
                         <Button asChild className="bg-orange-500">
                             <Link href="/contact">Neem contact op</Link>

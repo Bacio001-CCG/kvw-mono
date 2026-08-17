@@ -1,6 +1,8 @@
 import { AlertTriangle, CheckCircle2, HeartHandshake, MessageSquareWarning, ShieldCheck, Users } from "lucide-react";
 
 import PageHero from "@/components/site/page-hero";
+import UnpublishedNotice from "@/components/site/unpublished-notice";
+import { cmsPage, fetchPublicCmsSafe, paragraphs } from "@/lib/cms";
 
 const kernprincipes = [
     {
@@ -43,13 +45,21 @@ const meldproces = [
     },
 ];
 
-export default function GedragscodePage() {
+export const dynamic = "force-dynamic";
+export const revalidate = 0;
+
+export default async function GedragscodePage() {
+    const cms = await fetchPublicCmsSafe();
+    const page = cmsPage(cms, "gedragscode");
+    if (!page) return <UnpublishedNotice />;
+    const bodyParagraphs = paragraphs(page.body || "");
+
     return (
         <main className="flex flex-col gap-16 pb-20 pt-6 sm:gap-20 sm:pt-10">
             <PageHero
                 eyebrow="Gedragscode"
-                title="Samen zorgen we voor een veilige week"
-                description="Onze gedragscode helpt kinderen, ouders en vrijwilligers om dezelfde verwachtingen te delen: duidelijk, respectvol en veilig."
+                title={page.title}
+                description={page.summary || ""}
                 visual={(
                     <div className="space-y-4">
                         <div className="grid gap-3 sm:grid-cols-3">
@@ -78,6 +88,16 @@ export default function GedragscodePage() {
 
             <section className="mx-auto w-full max-w-300 px-4 sm:px-6 lg:px-10">
                 <div className="space-y-10">
+                    {bodyParagraphs.length ? (
+                        <article className="rounded-3xl bg-white p-6 sm:p-8 lg:p-10">
+                            <p className="text-xs font-semibold uppercase tracking-[0.16em] text-orange-600">Gedragscode</p>
+                            <div className="mt-4 space-y-4 text-base leading-8 text-muted-foreground">
+                                {bodyParagraphs.map((paragraph) => (
+                                    <p key={paragraph}>{paragraph}</p>
+                                ))}
+                            </div>
+                        </article>
+                    ) : null}
                     <article className="rounded-3xl  bg-white p-6 sm:p-8 lg:p-10">
                         <p className="text-xs font-semibold uppercase tracking-[0.16em] text-orange-600">Kernprincipes</p>
                         <h2 className="mt-3 text-3xl font-semibold tracking-tight text-foreground sm:text-4xl">Dit is hoe we met elkaar omgaan</h2>

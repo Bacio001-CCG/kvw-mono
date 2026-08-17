@@ -1,3 +1,5 @@
+"use client";
+
 import { Menu } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
@@ -6,17 +8,25 @@ import { Button } from "@workspace/ui/components/button";
 import { Sheet, SheetContent, SheetTrigger } from "@workspace/ui/components/sheet";
 import { cn } from "@workspace/ui/lib/utils";
 
+import { useSiteStatus } from "@/components/site/site-status";
+import { cmsPage } from "@/lib/cms";
+
 import { Navbar as NavbarComponent, NavbarLeft, NavbarRight } from "./navbar";
 
-const navigationLinks = [
-    { text: "Home", href: "/" },
-    { text: "Over ons", href: "/over-ons" },
-    { text: "Sponsorpakketten", href: "/sponsorpakketten" },
-    { text: "Gedragscode", href: "/gedragscode" },
-    { text: "Contact", href: "/contact" },
+const pageLinks = [
+    { text: "Over ons", href: "/over-ons", slug: "over-ons" },
+    { text: "Sponsorpakketten", href: "/sponsorpakketten", slug: "sponsorpakketten" },
+    { text: "Gedragscode", href: "/gedragscode", slug: "gedragscode" },
 ];
 
 export default function Navbar({ className }: { className?: string }) {
+    const status = useSiteStatus();
+    const navigationLinks = [
+        { text: "Home", href: "/" },
+        ...pageLinks.filter((link) => !status || cmsPage(status, link.slug)),
+        { text: "Contact", href: "/contact" },
+    ];
+
     return (
         <header className={cn("sticky top-0 z-50 px-4", className)}>
             <div className="absolute left-0 h-18 w-full bg-background/15 backdrop-blur-lg" />
@@ -37,12 +47,16 @@ export default function Navbar({ className }: { className?: string }) {
                     </NavbarLeft>
 
                     <NavbarRight>
+                        {status?.volunteerOpen !== false ? (
                         <Button asChild variant="outline" className="hidden md:inline-flex">
                             <Link href="/inschrijven/vrijwilliger">Vrijwilliger</Link>
                         </Button>
+                        ) : null}
+                        {status?.childOpen !== false ? (
                         <Button asChild className="bg-orange-500">
                             <Link href="/inschrijven/kind">Kind inschrijven</Link>
                         </Button>
+                        ) : null}
 
                         <Sheet>
                             <SheetTrigger asChild>
@@ -62,12 +76,16 @@ export default function Navbar({ className }: { className?: string }) {
                                         </Link>
                                     ))}
                                     <div className="mt-4 grid gap-2">
+                                        {status?.volunteerOpen !== false ? (
                                         <Button asChild variant="outline">
                                             <Link href="/inschrijven/vrijwilliger">Inschrijven vrijwilliger</Link>
                                         </Button>
+                                        ) : null}
+                                        {status?.childOpen !== false ? (
                                         <Button asChild className="bg-orange-500">
                                             <Link href="/inschrijven/kind">Inschrijven kind</Link>
                                         </Button>
+                                        ) : null}
                                     </div>
                                 </nav>
                             </SheetContent>

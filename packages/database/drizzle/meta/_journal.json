@@ -8,6 +8,13 @@
       "when": 1775931202425,
       "tag": "0000_mature_scalphunter",
       "breakpoints": true
+    },
+    {
+      "idx": 1,
+      "version": "7",
+      "when": 1786980601321,
+      "tag": "0001_faithful_vulcan",
+      "breakpoints": true
     }
   ]
 }

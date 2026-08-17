@@ -3,6 +3,9 @@
   "version": "0.0.0",
   "private": true,
   "exports": {
+    ".": "./src/index.ts",
+    "./schema": "./src/db/schema.ts",
+    "./client": "./src/client.ts",
     "./*": "./src/*.ts"
   },
   "scripts": {

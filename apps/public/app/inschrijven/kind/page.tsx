@@ -1,5 +1,6 @@
 import ChildRegistrationForm from "@/components/site/child-registration-form";
 import PageHero from "@/components/site/page-hero";
+import { RegistrationGate } from "@/components/site/site-status";
 
 export default function InschrijvenKindPage() {
     return (
@@ -7,7 +8,7 @@ export default function InschrijvenKindPage() {
             <PageHero
                 eyebrow="Inschrijven kind"
                 title="Meld je kind aan voor KVW HeKoS"
-                description="Lorem ipsum dolor sit amet, consectetur adipiscing elit. Integer posuere erat a ante venenatis dapibus posuere velit aliquet."
+                description="Vul de gegevens van je kind in. We gebruiken ze voor een veilige week en een passende groepsindeling."
                 visual={(
                     <div className="space-y-4">
                         <div className="rounded-[1.5rem] bg-linear-to-br from-orange-500 to-orange-400 p-5 text-white shadow-none">
@@ -27,7 +28,9 @@ export default function InschrijvenKindPage() {
             />
 
             <div className="mx-auto w-full max-w-6xl px-4 sm:px-6 lg:px-10">
-                <ChildRegistrationForm />
+                <RegistrationGate type="child">
+                    <ChildRegistrationForm />
+                </RegistrationGate>
             </div>
         </main>
     );
