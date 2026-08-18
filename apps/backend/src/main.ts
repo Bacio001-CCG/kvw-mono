@@ -18,13 +18,13 @@ for (const envPath of [
 
 async function bootstrap() {
     const app = await NestFactory.create(AppModule);
-    const origins = (process.env.ADMIN_ORIGIN || "http://localhost:3002")
+    const origins = (process.env.CORS_ORIGINS || process.env.ADMIN_ORIGIN || "http://localhost:3002,http://localhost:3000")
         .split(",")
         .map((item) => item.trim())
         .filter(Boolean);
 
     app.enableCors({
-        origin: [...origins, "http://localhost:3000", "http://localhost:3001"],
+        origin: origins,
         credentials: true,
     });
     app.getHttpAdapter().getInstance().disable("x-powered-by");

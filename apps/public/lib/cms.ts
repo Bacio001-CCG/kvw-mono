@@ -1,7 +1,8 @@
 import { DEFAULT_CONTENT, donationToAmount, type SiteContent } from "@/lib/site-defaults";
 
-export const BACKEND_URL = process.env.BACKEND_URL || process.env.NEXT_PUBLIC_API_URL || "http://localhost:4000";
-export const PUBLIC_API_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:4000";
+function getBackendUrl() {
+    return (process.env.BACKEND_URL || "http://localhost:4000").replace(/\/$/, "");
+}
 
 export type CmsPage = {
     id: string;
@@ -149,7 +150,7 @@ export const FALLBACK_CMS: PublicCms = {
 };
 
 export async function fetchPublicCms(): Promise<PublicCms> {
-    const response = await fetch(`${BACKEND_URL}/public/status`, {
+    const response = await fetch(`${getBackendUrl()}/public/status`, {
         cache: "no-store",
         headers: { "Cache-Control": "no-store" },
     });
@@ -185,7 +186,7 @@ export function paragraphs(text: string) {
 
 export async function postToBackend(path: string, body: unknown) {
     try {
-        const response = await fetch(`${BACKEND_URL}${path}`, {
+        const response = await fetch(`${getBackendUrl()}${path}`, {
             method: "POST",
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify(body),

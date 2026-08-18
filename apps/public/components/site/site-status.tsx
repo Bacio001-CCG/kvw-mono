@@ -3,7 +3,7 @@
 import { createContext, useContext, useEffect, useState, type ReactNode } from "react";
 import Link from "next/link";
 
-import { EMPTY_CMS, PUBLIC_API_URL, mapBackendStatus, type PublicCms } from "@/lib/cms";
+import { EMPTY_CMS, type PublicCms } from "@/lib/cms";
 
 export type SiteStatus = PublicCms;
 
@@ -14,16 +14,6 @@ export function SiteStatusProvider({ children }: { children: ReactNode }) {
 
     useEffect(() => {
         const load = async () => {
-            try {
-                const direct = await fetch(`${PUBLIC_API_URL}/public/status`, { cache: "no-store" });
-                if (direct.ok) {
-                    setStatus(mapBackendStatus(await direct.json()));
-                    return;
-                }
-            } catch {
-                // Fall through to the Next.js proxy.
-            }
-
             try {
                 const proxy = await fetch("/api/site/status", { cache: "no-store" });
                 if (!proxy.ok) {

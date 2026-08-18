@@ -5,25 +5,25 @@ services:
       dockerfile: Dockerfile
       target: backend
     ports:
-      - "7400:4000"
+      - "${BACKEND_HOST_PORT:-7400}:${BACKEND_PORT:-4000}"
     env_file:
       - apps/backend/.env
     environment:
-      PORT: "4000"
-      ADMIN_ORIGIN: http://localhost:7002,http://localhost:7000
+      PORT: ${BACKEND_PORT:-4000}
+      CORS_ORIGINS: ${CORS_ORIGINS:-http://localhost:7000,http://localhost:7002}
+      COOKIE_SECURE: ${COOKIE_SECURE:-false}
 
   public:
     build:
       context: .
       dockerfile: Dockerfile
       target: public
-      args:
-        NEXT_PUBLIC_API_URL: http://localhost:7400
     ports:
-      - "7000:3000"
+      - "${PUBLIC_HOST_PORT:-7000}:${PUBLIC_PORT:-3000}"
     environment:
-      BACKEND_URL: http://backend:4000
-      NEXT_PUBLIC_API_URL: http://localhost:7400
+      PORT: ${PUBLIC_PORT:-3000}
+      HOSTNAME: 0.0.0.0
+      BACKEND_URL: http://backend:${BACKEND_PORT:-4000}
     depends_on:
       - backend
 
@@ -32,11 +32,11 @@ services:
       context: .
       dockerfile: Dockerfile
       target: admin
-      args:
-        NEXT_PUBLIC_API_URL: http://localhost:7400
     ports:
-      - "7002:3002"
+      - "${ADMIN_HOST_PORT:-7002}:${ADMIN_PORT:-3002}"
     environment:
-      NEXT_PUBLIC_API_URL: http://localhost:7400
+      PORT: ${ADMIN_PORT:-3002}
+      HOSTNAME: 0.0.0.0
+      BACKEND_URL: http://backend:${BACKEND_PORT:-4000}
     depends_on:
       - backend
