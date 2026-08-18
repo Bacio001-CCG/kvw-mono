@@ -18,19 +18,28 @@ for (const envPath of [
 
 async function bootstrap() {
     const app = await NestFactory.create(AppModule);
-    const origins = (process.env.CORS_ORIGINS || process.env.ADMIN_ORIGIN || "http://localhost:3002,http://localhost:3000")
+    const origins = (process.env.CORS_ORIGINS || process.env.ADMIN_ORIGIN || "*")
         .split(",")
         .map((item) => item.trim())
         .filter(Boolean);
+    const allowAll = origins.includes("*");
 
     app.enableCors({
-        origin: origins,
+        origin: allowAll
+            ? true
+            : (origin, callback) => {
+                  if (!origin || origins.includes(origin)) {
+                      callback(null, true);
+                      return;
+                  }
+                  callback(null, false);
+              },
         credentials: true,
     });
     app.getHttpAdapter().getInstance().disable("x-powered-by");
 
     const port = Number(process.env.PORT) || 4000;
-    await app.listen(port);
+    await app.listen(port, "0.0.0.0");
 }
 
 bootstrap();

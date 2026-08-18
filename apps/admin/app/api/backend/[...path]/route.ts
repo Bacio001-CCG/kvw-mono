@@ -3,7 +3,9 @@ import { NextRequest, NextResponse } from "next/server";
 export const dynamic = "force-dynamic";
 
 function getBackendUrl() {
-    return (process.env.BACKEND_URL || "http://localhost:4000").replace(/\/$/, "");
+    const fromEnv = process.env["BACKEND_URL"];
+    if (fromEnv) return fromEnv.replace(/\/$/, "");
+    return process.env.NODE_ENV === "production" ? "http://backend:4000" : "http://localhost:4000";
 }
 
 async function proxy(request: NextRequest, context: { params: Promise<{ path: string[] }> }) {
@@ -19,6 +21,7 @@ async function proxy(request: NextRequest, context: { params: Promise<{ path: st
     const init: RequestInit = { method: request.method, headers };
     if (request.method !== "GET" && request.method !== "HEAD") {
         init.body = await request.arrayBuffer();
+        Object.assign(init, { duplex: "half" });
     }
 
     let response: Response;

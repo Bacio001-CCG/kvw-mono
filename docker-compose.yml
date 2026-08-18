@@ -10,7 +10,7 @@ services:
       - apps/backend/.env
     environment:
       PORT: ${BACKEND_PORT:-4000}
-      CORS_ORIGINS: ${CORS_ORIGINS:-http://localhost:7000,http://localhost:7002}
+      CORS_ORIGINS: ${CORS_ORIGINS:-*}
       COOKIE_SECURE: ${COOKIE_SECURE:-false}
 
   public:

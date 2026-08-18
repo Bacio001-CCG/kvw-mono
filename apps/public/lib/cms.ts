@@ -1,7 +1,9 @@
 import { DEFAULT_CONTENT, donationToAmount, type SiteContent } from "@/lib/site-defaults";
 
 function getBackendUrl() {
-    return (process.env.BACKEND_URL || "http://localhost:4000").replace(/\/$/, "");
+    const fromEnv = process.env["BACKEND_URL"];
+    if (fromEnv) return fromEnv.replace(/\/$/, "");
+    return process.env.NODE_ENV === "production" ? "http://backend:4000" : "http://localhost:4000";
 }
 
 export type CmsPage = {
@@ -163,7 +165,8 @@ export async function fetchPublicCms(): Promise<PublicCms> {
 export async function fetchPublicCmsSafe(): Promise<PublicCms> {
     try {
         return await fetchPublicCms();
-    } catch {
+    } catch (error) {
+        console.error(`CMS fetch failed from ${getBackendUrl()}`, error);
         return EMPTY_CMS;
     }
 }
