@@ -26,7 +26,7 @@ services:
       - apps/backend/.env
     environment:
       PORT: ${BACKEND_PORT:-4000}
-      DATABASE_URL: postgresql://postgres:postgres@postgres:5432/kvw
+      DATABASE_URL: ${DATABASE_URL}
       BETTER_AUTH_SECRET: ${BETTER_AUTH_SECRET}
       BETTER_AUTH_URL: ${BETTER_AUTH_URL:-http://localhost:7002/api/backend}
       ADMIN_URL: ${ADMIN_URL:-http://localhost:7002}
