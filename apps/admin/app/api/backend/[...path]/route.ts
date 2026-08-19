@@ -37,8 +37,13 @@ async function proxy(request: NextRequest, context: { params: Promise<{ path: st
     const disposition = response.headers.get("content-disposition");
     if (disposition) out.headers.set("content-disposition", disposition);
 
-    for (const cookie of response.headers.getSetCookie()) {
+    const setCookies = response.headers.getSetCookie();
+    for (const cookie of setCookies) {
         out.headers.append("set-cookie", cookie);
+    }
+
+    if (setCookies.length > 0) {
+        console.log("[proxy] forwarding set-cookie headers:", setCookies);
     }
 
     return out;
