@@ -14,6 +14,8 @@ RUN pnpm install --frozen-lockfile
 
 FROM deps AS builder
 COPY . .
+ARG NEXT_PUBLIC_BACKEND_URL=http://localhost:7400
+ENV NEXT_PUBLIC_BACKEND_URL=$NEXT_PUBLIC_BACKEND_URL
 ENV BACKEND_URL=http://backend:4000
 RUN pnpm build
 

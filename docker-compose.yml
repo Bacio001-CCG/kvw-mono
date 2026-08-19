@@ -28,11 +28,8 @@ services:
       PORT: ${BACKEND_PORT:-4000}
       DATABASE_URL: ${DATABASE_URL}
       BETTER_AUTH_SECRET: ${BETTER_AUTH_SECRET}
-      BETTER_AUTH_URL: ${BETTER_AUTH_URL:-http://localhost:7002/api/backend}
+      BETTER_AUTH_URL: ${BETTER_AUTH_URL:-http://localhost:7400}
       ADMIN_URL: ${ADMIN_URL:-http://localhost:7002}
-      ADMIN_EMAIL: ${ADMIN_EMAIL:-admin@kvw.local}
-      ADMIN_NAME: ${ADMIN_NAME:-Beheerder}
-      ADMIN_PASSWORD: ${ADMIN_PASSWORD:-hekos-dev}
       GOOGLE_CLIENT_ID: ${GOOGLE_CLIENT_ID}
       GOOGLE_CLIENT_SECRET: ${GOOGLE_CLIENT_SECRET}
       CORS_ORIGINS: ${CORS_ORIGINS:-*}
@@ -60,6 +57,8 @@ services:
       context: .
       dockerfile: Dockerfile
       target: admin
+      args:
+        NEXT_PUBLIC_BACKEND_URL: ${NEXT_PUBLIC_BACKEND_URL:-http://localhost:7400}
     ports:
       - "${ADMIN_HOST_PORT:-7002}:${ADMIN_PORT:-3002}"
     environment:
