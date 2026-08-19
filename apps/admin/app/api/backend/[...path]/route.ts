@@ -12,11 +12,15 @@ async function proxy(request: NextRequest, context: { params: Promise<{ path: st
     const { path } = await context.params;
     const target = `${getBackendUrl()}/${path.join("/")}${request.nextUrl.search}`;
 
+    // Forward headers we explicitly need. In particular, cookie forwarding can be finicky across runtimes,
+    // so we set `Cookie` (capital C) explicitly.
     const headers = new Headers();
-    for (const key of ["cookie", "content-type", "accept"]) {
-        const value = request.headers.get(key);
-        if (value) headers.set(key, value);
-    }
+    const cookie = request.headers.get("cookie");
+    if (cookie) headers.set("Cookie", cookie);
+    const requestContentType = request.headers.get("content-type");
+    if (requestContentType) headers.set("content-type", requestContentType);
+    const accept = request.headers.get("accept");
+    if (accept) headers.set("accept", accept);
 
     const init: RequestInit = { method: request.method, headers };
     if (request.method !== "GET" && request.method !== "HEAD") {
@@ -43,7 +47,8 @@ async function proxy(request: NextRequest, context: { params: Promise<{ path: st
     }
 
     if (setCookies.length > 0) {
-        console.log("[proxy] forwarding set-cookie headers:", setCookies);
+        // Avoid logging cookie contents (may include session tokens).
+        console.log("[proxy] forwarded set-cookie count:", setCookies.length);
     }
 
     return out;

@@ -1,7 +1,7 @@
 import { count, desc } from "drizzle-orm";
 
-import type { Database } from "../client";
-import { contentBlocks, contentPages, registrationCycles, siteDocuments, sponsors } from "../db/schema";
+import type { Database } from "@repo/database";
+import { contentBlocks, contentPages, registrationCycles, siteDocuments, sponsors } from "../schema";
 import { DEFAULT_BLOCKS, DEFAULT_CYCLE, DEFAULT_DOCUMENTS, DEFAULT_PAGES, DEFAULT_SPONSORS } from "./data";
 
 export async function seedDatabase(db: Database) {

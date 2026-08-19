@@ -25,7 +25,7 @@ import {
     toDateInput,
     toIso,
 } from "./mappers";
-import { DEFAULT_BLOCKS, DEFAULT_PAGES, DEFAULT_SPONSORS } from "./site.seed";
+import { DEFAULT_BLOCKS, DEFAULT_PAGES, DEFAULT_SPONSORS } from "../database/seed/data";
 import type {
     ChildRegistration,
     ContactMessage,
