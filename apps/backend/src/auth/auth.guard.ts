@@ -34,7 +34,7 @@ export function isValidSession(token?: string) {
 
 export function cookieHeader(token: string, maxAge: number) {
     const secure = process.env.COOKIE_SECURE === "true" ? "; Secure" : "";
-    return `${ADMIN_COOKIE}=${encodeURIComponent(token)}; HttpOnly; Path=/; SameSite=Lax; Max-Age=${maxAge}${secure}`;
+    return `${ADMIN_COOKIE}=${encodeURIComponent(token)}; HttpOnly; Path=/; Max-Age=${maxAge}${secure}`;
 }
 
 @Injectable()
