@@ -1,4 +1,20 @@
 services:
+  postgres:
+    image: postgres:16-alpine
+    ports:
+      - "${POSTGRES_HOST_PORT:-5432}:5432"
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_DB: kvw
+    volumes:
+      - kvw_postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres -d kvw"]
+      interval: 3s
+      timeout: 5s
+      retries: 10
+
   backend:
     build:
       context: .
@@ -10,8 +26,20 @@ services:
       - apps/backend/.env
     environment:
       PORT: ${BACKEND_PORT:-4000}
+      DATABASE_URL: postgresql://postgres:postgres@postgres:5432/kvw
+      BETTER_AUTH_SECRET: ${BETTER_AUTH_SECRET}
+      BETTER_AUTH_URL: ${BETTER_AUTH_URL:-http://localhost:7002/api/backend}
+      ADMIN_URL: ${ADMIN_URL:-http://localhost:7002}
+      ADMIN_EMAIL: ${ADMIN_EMAIL:-admin@kvw.local}
+      ADMIN_NAME: ${ADMIN_NAME:-Beheerder}
+      ADMIN_PASSWORD: ${ADMIN_PASSWORD:-hekos-dev}
+      GOOGLE_CLIENT_ID: ${GOOGLE_CLIENT_ID}
+      GOOGLE_CLIENT_SECRET: ${GOOGLE_CLIENT_SECRET}
       CORS_ORIGINS: ${CORS_ORIGINS:-*}
       COOKIE_SECURE: ${COOKIE_SECURE:-false}
+    depends_on:
+      postgres:
+        condition: service_healthy
 
   public:
     build:
@@ -40,3 +68,6 @@ services:
       BACKEND_URL: http://backend:${BACKEND_PORT:-4000}
     depends_on:
       - backend
+
+volumes:
+  kvw_postgres_data:

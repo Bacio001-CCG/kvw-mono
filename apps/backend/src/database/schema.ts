@@ -325,4 +325,104 @@ export const contactMessages = pgTable(
     })
 );
 
+export const user = pgTable(
+    "user",
+    {
+        id: text("id").primaryKey(),
+        name: text("name").notNull(),
+        email: text("email").notNull(),
+        emailVerified: boolean("email_verified").default(false).notNull(),
+        image: text("image"),
+        isOwner: boolean("is_owner").default(false).notNull(),
+        isActive: boolean("is_active").default(true).notNull(),
+        createdAt: timestamp("created_at").defaultNow().notNull(),
+        updatedAt: timestamp("updated_at")
+            .defaultNow()
+            .$onUpdate(() => new Date())
+            .notNull(),
+    },
+    (table) => ({
+        emailUnique: unique("user_email_unique").on(table.email),
+        emailIndex: index("user_email_idx").on(table.email),
+    })
+);
+
+export const session = pgTable(
+    "session",
+    {
+        id: text("id").primaryKey(),
+        expiresAt: timestamp("expires_at").notNull(),
+        token: text("token").notNull(),
+        createdAt: timestamp("created_at").defaultNow().notNull(),
+        updatedAt: timestamp("updated_at")
+            .$onUpdate(() => new Date())
+            .notNull(),
+        ipAddress: text("ip_address"),
+        userAgent: text("user_agent"),
+        userId: text("user_id")
+            .notNull()
+            .references(() => user.id, { onDelete: "cascade" }),
+    },
+    (table) => ({
+        tokenUnique: unique("session_token_unique").on(table.token),
+        userIndex: index("session_user_id_idx").on(table.userId),
+        expiresAtIndex: index("session_expires_at_idx").on(table.expiresAt),
+        tokenIndex: index("session_token_idx").on(table.token),
+    })
+);
+
+export const account = pgTable(
+    "account",
+    {
+        id: text("id").primaryKey(),
+        accountId: text("account_id").notNull(),
+        providerId: text("provider_id").notNull(),
+        userId: text("user_id")
+            .notNull()
+            .references(() => user.id, { onDelete: "cascade" }),
+        accessToken: text("access_token"),
+        refreshToken: text("refresh_token"),
+        idToken: text("id_token"),
+        accessTokenExpiresAt: timestamp("access_token_expires_at"),
+        refreshTokenExpiresAt: timestamp("refresh_token_expires_at"),
+        scope: text("scope"),
+        password: text("password"),
+        createdAt: timestamp("created_at").defaultNow().notNull(),
+        updatedAt: timestamp("updated_at")
+            .$onUpdate(() => new Date())
+            .notNull(),
+    },
+    (table) => ({
+        userIndex: index("account_user_id_idx").on(table.userId),
+        providerIndex: index("account_provider_id_idx").on(table.providerId),
+    })
+);
+
+export const verification = pgTable(
+    "verification",
+    {
+        id: text("id").primaryKey(),
+        identifier: text("identifier").notNull(),
+        value: text("value").notNull(),
+        expiresAt: timestamp("expires_at").notNull(),
+        createdAt: timestamp("created_at").defaultNow().notNull(),
+        updatedAt: timestamp("updated_at")
+            .defaultNow()
+            .$onUpdate(() => new Date())
+            .notNull(),
+    },
+    (table) => ({
+        identifierIndex: index("verification_identifier_idx").on(table.identifier),
+        expiresAtIndex: index("verification_expires_at_idx").on(table.expiresAt),
+    })
+);
+
+export const userPermissions = pgTable("user_permissions", {
+    userId: text("user_id")
+        .primaryKey()
+        .references(() => user.id, { onDelete: "cascade" }),
+    permissions: text("permissions").notNull().default("[]"),
+    ...timestamps(),
+});
+
 export type SelectSettings = typeof registrationCycles.$inferSelect;

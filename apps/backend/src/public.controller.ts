@@ -1,9 +1,11 @@
 import { Body, Controller, ForbiddenException, Get, Post } from "@nestjs/common";
+import { AllowAnonymous } from "@thallesp/nestjs-better-auth";
 
 import { SiteService } from "./site/site.service";
 import type { ChildRegistration, ContactMessage, VolunteerRegistration } from "./site/site.types";
 
 @Controller("public")
+@AllowAnonymous()
 export class PublicController {
     constructor(private readonly site: SiteService) {}
 

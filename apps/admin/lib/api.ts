@@ -1,7 +1,7 @@
-const API_URL = "/api/backend";
+import { getBackendUrl } from "./backend-url";
 
 export async function api<T>(path: string, init?: RequestInit): Promise<T> {
-    const response = await fetch(`${API_URL}${path}`, {
+    const response = await fetch(`${getBackendUrl()}${path}`, {
         ...init,
         credentials: "include",
         headers: {
@@ -15,6 +15,11 @@ export async function api<T>(path: string, init?: RequestInit): Promise<T> {
             window.location.href = "/login";
         }
         throw new Error("Niet ingelogd.");
+    }
+
+    if (response.status === 403) {
+        const data = (await response.json().catch(() => ({}))) as { message?: string };
+        throw new Error(data.message || "Geen toegang.");
     }
 
     if (!response.ok) {
@@ -31,7 +36,7 @@ export async function api<T>(path: string, init?: RequestInit): Promise<T> {
 }
 
 export async function downloadCsv(path: string, filename: string) {
-    const response = await fetch(`${API_URL}${path}`, { credentials: "include" });
+    const response = await fetch(`${getBackendUrl()}${path}`, { credentials: "include" });
     if (!response.ok) throw new Error("Export mislukt.");
     const blob = await response.blob();
     const url = URL.createObjectURL(blob);

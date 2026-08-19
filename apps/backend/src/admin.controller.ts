@@ -1,17 +1,19 @@
 import { BadRequestException, Body, Controller, Get, Param, Patch, Post, Query, Res, UseGuards } from "@nestjs/common";
 import type { Response } from "express";
 
-import { AuthGuard } from "./auth/auth.guard";
+import { PermissionGuard } from "./auth/permission.guard";
+import { RequirePermission } from "./auth/require-permission.decorator";
 import { toCsv } from "./csv";
 import { SiteService } from "./site/site.service";
 import type { ContentBlock, ContentPage, RegistrationCycle, SiteDocument, Sponsor } from "./site/site.types";
 
 @Controller("admin")
-@UseGuards(AuthGuard)
+@UseGuards(PermissionGuard)
 export class AdminController {
     constructor(private readonly site: SiteService) {}
 
     @Get("overview")
+    @RequirePermission("overview")
     async overview() {
         const cycle = await this.site.publicCycle();
         const [cycles, children, volunteers, contacts] = await Promise.all([
@@ -34,11 +36,13 @@ export class AdminController {
     }
 
     @Get("cycles")
+    @RequirePermission("registrations")
     cycles() {
         return this.site.listCycles();
     }
 
     @Post("cycles")
+    @RequirePermission("registrations")
     async createCycle(@Body() body: { year?: number; label?: string }) {
         const year = Number(body.year);
         if (!year || year < 2020) {
@@ -52,6 +56,7 @@ export class AdminController {
     }
 
     @Patch("cycles/:id")
+    @RequirePermission("registrations")
     async updateCycle(@Param("id") id: string, @Body() body: Partial<RegistrationCycle>) {
         const cycle = await this.site.updateCycle(id, body);
         if (!cycle) return { message: "Jaar niet gevonden." };
@@ -59,16 +64,19 @@ export class AdminController {
     }
 
     @Get("children")
+    @RequirePermission("children")
     children(@Query("cycleId") cycleId?: string) {
         return this.site.listChildren(cycleId);
     }
 
     @Get("volunteers")
+    @RequirePermission("volunteers")
     volunteers(@Query("cycleId") cycleId?: string) {
         return this.site.listVolunteers(cycleId);
     }
 
     @Get("children/export")
+    @RequirePermission("children")
     async exportChildren(@Query("cycleId") cycleId: string | undefined, @Res() response: Response) {
         const rows = (await this.site.listChildren(cycleId)).map((item) => ({
             voornaam: item.childFirstName,
@@ -100,6 +108,7 @@ export class AdminController {
     }
 
     @Get("volunteers/export")
+    @RequirePermission("volunteers")
     async exportVolunteers(@Query("cycleId") cycleId: string | undefined, @Res() response: Response) {
         const rows = (await this.site.listVolunteers(cycleId)).map((item) => ({
             voornaam: item.firstName,
@@ -128,6 +137,7 @@ export class AdminController {
     }
 
     @Patch("children/:id/payment")
+    @RequirePermission("children")
     async simulatePayment(@Param("id") id: string) {
         const result = await this.site.confirmChildPayment(id);
         if ("error" in result && result.error) return { message: result.error };
@@ -135,11 +145,13 @@ export class AdminController {
     }
 
     @Get("pages")
+    @RequirePermission("content")
     pages() {
         return this.site.listPages();
     }
 
     @Patch("pages/:id")
+    @RequirePermission("content")
     async updatePage(@Param("id") id: string, @Body() body: Partial<ContentPage>) {
         const page = await this.site.updatePage(id, body);
         if (!page) return { message: "Pagina niet gevonden." };
@@ -147,11 +159,13 @@ export class AdminController {
     }
 
     @Get("blocks")
+    @RequirePermission("content")
     blocks() {
         return this.site.listBlocks();
     }
 
     @Patch("blocks/:id")
+    @RequirePermission("content")
     async updateBlock(@Param("id") id: string, @Body() body: Partial<ContentBlock>) {
         const block = await this.site.updateBlock(id, body);
         if (!block) return { message: "Tekstblok niet gevonden." };
@@ -159,11 +173,13 @@ export class AdminController {
     }
 
     @Get("documents")
+    @RequirePermission("documents")
     documents() {
         return this.site.listDocuments();
     }
 
     @Patch("documents/:id")
+    @RequirePermission("documents")
     async updateDocument(@Param("id") id: string, @Body() body: Partial<SiteDocument>) {
         const document = await this.site.updateDocument(id, body);
         if (!document) return { message: "Document niet gevonden." };
@@ -171,16 +187,19 @@ export class AdminController {
     }
 
     @Get("sponsors")
+    @RequirePermission("sponsors")
     sponsors() {
         return this.site.listSponsors();
     }
 
     @Post("sponsors")
+    @RequirePermission("sponsors")
     createSponsor(@Body() body: Partial<Sponsor>) {
         return this.site.createSponsor(body);
     }
 
     @Patch("sponsors/:id")
+    @RequirePermission("sponsors")
     async updateSponsor(@Param("id") id: string, @Body() body: Partial<Sponsor>) {
         const sponsor = await this.site.updateSponsor(id, body);
         if (!sponsor) return { message: "Sponsor niet gevonden." };
@@ -188,11 +207,13 @@ export class AdminController {
     }
 
     @Get("contacts")
+    @RequirePermission("contact")
     contacts() {
         return this.site.listContacts();
     }
 
     @Patch("contacts/:id")
+    @RequirePermission("contact")
     async updateContact(@Param("id") id: string, @Body() body: { isRead?: boolean }) {
         const contact = await this.site.updateContact(id, body);
         if (!contact) return { message: "Bericht niet gevonden." };

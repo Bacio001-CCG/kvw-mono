@@ -23,7 +23,6 @@ module.exports = function (options) {
             ...options.resolve,
             alias: {
                 ...(options.resolve?.alias || {}),
-                "@repo/database": path.resolve(__dirname, "../../packages/database/src/index.ts"),
                 "@repo/types": path.resolve(__dirname, "../../packages/types/src/index.ts"),
             },
             extensionAlias: {

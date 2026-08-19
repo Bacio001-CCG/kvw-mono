@@ -9,7 +9,7 @@ import {
     siteDocuments,
     sponsors,
     volunteerRegistrations,
-} from "@repo/database";
+} from "../database/schema";
 import { and, count, desc, eq } from "drizzle-orm";
 
 import { DrizzleService } from "../database/drizzle.service";

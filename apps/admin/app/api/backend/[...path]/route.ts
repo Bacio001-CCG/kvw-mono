@@ -12,17 +12,17 @@ async function proxy(request: NextRequest, context: { params: Promise<{ path: st
     const { path } = await context.params;
     const target = `${getBackendUrl()}/${path.join("/")}${request.nextUrl.search}`;
 
-    // Forward headers we explicitly need. In particular, cookie forwarding can be finicky across runtimes,
-    // so we set `Cookie` (capital C) explicitly.
     const headers = new Headers();
     const cookie = request.headers.get("cookie");
     if (cookie) headers.set("Cookie", cookie);
-    const requestContentType = request.headers.get("content-type");
-    if (requestContentType) headers.set("content-type", requestContentType);
-    const accept = request.headers.get("accept");
-    if (accept) headers.set("accept", accept);
 
-    const init: RequestInit = { method: request.method, headers };
+    const forward = ["content-type", "accept", "origin", "referer"] as const;
+    for (const name of forward) {
+        const value = request.headers.get(name);
+        if (value) headers.set(name, value);
+    }
+
+    const init: RequestInit = { method: request.method, headers, redirect: "manual" };
     if (request.method !== "GET" && request.method !== "HEAD") {
         init.body = await request.arrayBuffer();
         Object.assign(init, { duplex: "half" });
@@ -36,6 +36,8 @@ async function proxy(request: NextRequest, context: { params: Promise<{ path: st
     }
 
     const out = new NextResponse(response.body, { status: response.status });
+    const location = response.headers.get("location");
+    if (location) out.headers.set("location", location);
     const contentType = response.headers.get("content-type");
     if (contentType) out.headers.set("content-type", contentType);
     const disposition = response.headers.get("content-disposition");

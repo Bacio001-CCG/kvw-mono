@@ -8,6 +8,7 @@ import { Button } from "@workspace/ui/components/button";
 import AdminShell from "@/components/admin-shell";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { api } from "@/lib/api";
+import { useAuth } from "@/lib/auth-context";
 
 type Overview = {
     cycle: {
@@ -26,14 +27,16 @@ type Overview = {
 };
 
 export default function DashboardPage() {
+    const { can, loading: authLoading } = useAuth();
     const [data, setData] = useState<Overview | null>(null);
     const [error, setError] = useState("");
 
     useEffect(() => {
+        if (authLoading || !can("overview")) return;
         api<Overview>("/admin/overview")
             .then(setData)
             .catch((item) => setError(item instanceof Error ? item.message : "Laden mislukt."));
-    }, []);
+    }, [authLoading, can]);
 
     return (
         <AdminShell>
@@ -42,7 +45,20 @@ export default function DashboardPage() {
                     <h1 className="text-3xl font-bold">Overzicht</h1>
                     <p className="mt-1 text-muted-foreground">Beheer inschrijvingen, teksten en exports zonder een ontwikkelaar.</p>
                 </div>
+                {!authLoading && !can("overview") ? (
+                    <Card>
+                        <CardHeader>
+                            <CardTitle>Geen rechten</CardTitle>
+                            <CardDescription>
+                                Je bent ingelogd, maar er zijn nog geen rechten aan je account gekoppeld. Vraag een
+                                beheerder om toegang.
+                            </CardDescription>
+                        </CardHeader>
+                    </Card>
+                ) : null}
                 {error ? <p className="text-sm text-red-600">{error}</p> : null}
+                {can("overview") ? (
+                    <>
                 {data?.cycle?.isTestMode ? (
                     <div className="rounded-xl bg-amber-100 px-4 py-3 text-sm text-amber-950">
                         Testomgeving staat aan. Controleer formulieren en betaling eerst hier, daarna kun je live zetten.
@@ -96,6 +112,8 @@ export default function DashboardPage() {
                         </CardDescription>
                     </CardHeader>
                 </Card>
+                    </>
+                ) : null}
             </div>
         </AdminShell>
     );

@@ -1,24 +1,13 @@
 import { Injectable, OnModuleDestroy } from "@nestjs/common";
-import { createDb, type Database } from "@repo/database";
-import type { Pool } from "pg";
+
+import { db, pool } from "./db";
+import type { Database } from "./client";
 
 @Injectable()
 export class DrizzleService implements OnModuleDestroy {
-    readonly db: Database;
-    private readonly pool: Pool;
-
-    constructor() {
-        const databaseUrl = process.env.DATABASE_URL;
-        if (!databaseUrl) {
-            throw new Error("DATABASE_URL is not set. Add it to apps/backend/.env or packages/database/.env");
-        }
-
-        const client = createDb(databaseUrl);
-        this.db = client.db;
-        this.pool = client.pool;
-    }
+    readonly db: Database = db;
 
     async onModuleDestroy() {
-        await this.pool.end();
+        await pool.end();
     }
 }
