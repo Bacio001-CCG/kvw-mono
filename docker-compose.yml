@@ -58,12 +58,15 @@ services:
       dockerfile: Dockerfile
       target: admin
       args:
-        NEXT_PUBLIC_BACKEND_URL: ${NEXT_PUBLIC_BACKEND_URL:-http://localhost:7400}
+        # Baked into the client: empty URL → use window.hostname + host port
+        NEXT_PUBLIC_BACKEND_URL: ${NEXT_PUBLIC_BACKEND_URL:-}
+        NEXT_PUBLIC_BACKEND_HOST_PORT: ${NEXT_PUBLIC_BACKEND_HOST_PORT:-${BACKEND_HOST_PORT:-7400}}
     ports:
       - "${ADMIN_HOST_PORT:-7002}:${ADMIN_PORT:-3002}"
     environment:
       PORT: ${ADMIN_PORT:-3002}
       HOSTNAME: 0.0.0.0
+      # Container→container only (server-side / proxy). Browser never uses this.
       BACKEND_URL: http://backend:${BACKEND_PORT:-4000}
     depends_on:
       - backend
